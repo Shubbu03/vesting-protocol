@@ -1,6 +1,15 @@
-#![allow(clippy::result_large_err)]
+#![allow(clippy::result_large_err, unexpected_cfgs, deprecated)]
+
+pub mod constants;
+pub mod error;
+pub mod instructions;
+pub mod state;
 
 use anchor_lang::prelude::*;
+pub use constants::*;
+pub use error::*;
+pub use instructions::*;
+pub use state::*;
 
 declare_id!("JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H");
 
@@ -8,63 +17,31 @@ declare_id!("JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H");
 pub mod vesting {
     use super::*;
 
-    pub fn close(_ctx: Context<CloseVesting>) -> Result<()> {
-        Ok(())
+    pub fn create_vesting(ctx: Context<CreateVesting>, company_name: String) -> Result<()> {
+        ctx.accounts.create_vesting(
+            company_name,
+            ctx.bumps.treasury_token_account,
+            ctx.bumps.vesting,
+        )
     }
 
-    pub fn decrement(ctx: Context<Update>) -> Result<()> {
-        ctx.accounts.vesting.count = ctx.accounts.vesting.count.checked_sub(1).unwrap();
-        Ok(())
+    pub fn create_employee(
+        ctx: Context<CreateEmployee>,
+        start_time: i64,
+        end_time: i64,
+        cliff_time: i64,
+        total_amount: u64,
+    ) -> Result<()> {
+        ctx.accounts.create_employee(
+            start_time,
+            end_time,
+            cliff_time,
+            total_amount,
+            ctx.bumps.employee,
+        )
     }
 
-    pub fn increment(ctx: Context<Update>) -> Result<()> {
-        ctx.accounts.vesting.count = ctx.accounts.vesting.count.checked_add(1).unwrap();
-        Ok(())
+    pub fn claim_tokens(ctx: Context<ClaimTokens>, company_name: String) -> Result<()> {
+        ctx.accounts.claim_tokens(company_name)
     }
-
-    pub fn initialize(_ctx: Context<InitializeVesting>) -> Result<()> {
-        Ok(())
-    }
-
-    pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-        ctx.accounts.vesting.count = value.clone();
-        Ok(())
-    }
-}
-
-#[derive(Accounts)]
-pub struct InitializeVesting<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>,
-
-    #[account(
-  init,
-  space = 8 + Vesting::INIT_SPACE,
-  payer = payer
-    )]
-    pub vesting: Account<'info, Vesting>,
-    pub system_program: Program<'info, System>,
-}
-#[derive(Accounts)]
-pub struct CloseVesting<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>,
-
-    #[account(
-  mut,
-  close = payer, // close account and return lamports to payer
-    )]
-    pub vesting: Account<'info, Vesting>,
-}
-
-#[derive(Accounts)]
-pub struct Update<'info> {
-    #[account(mut)]
-    pub vesting: Account<'info, Vesting>,
-}
-
-#[account]
-#[derive(InitSpace)]
-pub struct Vesting {
-    count: u8,
 }
