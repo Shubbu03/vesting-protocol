@@ -1,3 +1,20 @@
 {
-  "extends": "../tsconfig.json"
+  "compilerOptions": {
+    "target": "es2020",
+    "lib": [
+      "es2020"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "tests/**/*",
+    "src/**/*"
+  ]
 }
