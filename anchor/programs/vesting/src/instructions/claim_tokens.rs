@@ -54,7 +54,7 @@ impl<'info> ClaimTokens<'info> {
         let now = Clock::get()?.unix_timestamp;
 
         require!(
-            now < self.employee.cliff_time,
+            now >= self.employee.cliff_time,
             VestingError::ClaimNotAvailableYet
         );
 
@@ -75,7 +75,7 @@ impl<'info> ClaimTokens<'info> {
                 .total_amount
                 .checked_mul(time_since_start as u64)
             {
-                Some(product) => product / time_since_start as u64,
+                Some(product) => product / total_vesting_time as u64,
                 None => {
                     return Err(VestingError::CalculationOverflow.into());
                 }
