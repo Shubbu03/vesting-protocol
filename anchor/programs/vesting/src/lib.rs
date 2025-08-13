@@ -11,7 +11,7 @@ pub use error::*;
 pub use instructions::*;
 pub use state::*;
 
-declare_id!("JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H");
+declare_id!("8ZAk8VCCFo1dSKZpPxBrFWoA9edEjWkymxiKanAV5uJN");
 
 #[program]
 pub mod vesting {
